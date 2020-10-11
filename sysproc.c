@@ -90,17 +90,25 @@ sys_uptime(void)
   return xticks;
 }
 
-void
+int
 sys_hello(void)
 {
   cprintf("helloxv6\n");
+  return 0;
 }
 
-void
+int
 sys_helloname(void)
 {
   char *name;
   if (argstr(0, &name) < 0)
-    return;
+    return -1;
   cprintf("hello %s\n", name);
+  return 0;
+}
+
+int
+sys_get_num_proc(void)
+{
+  return get_num_proc();
 }

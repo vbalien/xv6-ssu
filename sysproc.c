@@ -95,3 +95,12 @@ sys_hello(void)
 {
   cprintf("helloxv6\n");
 }
+
+void
+sys_helloname(void)
+{
+  char *name;
+  if (argstr(0, &name) < 0)
+    return;
+  cprintf("hello %s\n", name);
+}

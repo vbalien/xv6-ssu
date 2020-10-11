@@ -5,7 +5,7 @@
 
 int main(void)
 {
-  int pcount = get_num_proc(&pcount);
+  int pcount = get_num_proc();
   printf(0, "Total Number of Active Processes: %d\n", pcount);
   exit();
 }

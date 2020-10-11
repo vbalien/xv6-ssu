@@ -106,6 +106,7 @@ extern int sys_uptime(void);
 extern int sys_hello(void);
 extern int sys_helloname(void);
 extern int sys_get_num_proc(void);
+extern int sys_get_max_pid(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]          sys_fork,
@@ -132,6 +133,7 @@ static int (*syscalls[])(void) = {
 [SYS_hello]         sys_hello,
 [SYS_helloname]     sys_helloname,
 [SYS_get_num_proc]  sys_get_num_proc,
+[SYS_get_max_pid]  sys_get_max_pid,
 };
 
 void

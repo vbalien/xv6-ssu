@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "processInfo.h"
 
 struct {
   struct spinlock lock;
@@ -88,6 +89,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->switches = 0;
 
   release(&ptable.lock);
 
@@ -340,6 +342,7 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
+      c->proc->switches++;
       switchuvm(p);
       p->state = RUNNING;
 
@@ -559,6 +562,31 @@ get_max_pid(void)
     if(p->state != UNUSED && pid < p->pid)
         pid = p->pid;
   release(&ptable.lock);
-  
+
   return pid;
+}
+
+int
+get_proc_info(int pid, struct processInfo *info)
+{
+  struct proc *p = 0;
+  int found = 0;
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if(p->state != UNUSED && p->pid == pid)
+    {
+      memset(info, 0, sizeof(*info));
+      if ( p->parent != 0)
+        info->ppid = p->parent->pid;
+
+      info->psize = p->sz;
+      info->numberContextSwitches = p->switches;
+      found = 1;
+      break;
+    }
+  release(&ptable.lock);
+  if (found)
+    return 0;
+  return -1;
 }

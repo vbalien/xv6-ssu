@@ -380,6 +380,7 @@ sched(void)
   if(readeflags()&FL_IF)
     panic("sched interruptible");
   intena = mycpu()->intena;
+  p->switches++;
   swtch(&p->context, mycpu()->scheduler);
   mycpu()->intena = intena;
 }

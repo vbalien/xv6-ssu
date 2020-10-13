@@ -90,6 +90,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->switches = 0;
+  p->priority = 50;
 
   release(&ptable.lock);
 
@@ -590,4 +591,19 @@ get_proc_info(int pid, struct processInfo *info)
   if (found)
     return 0;
   return -1;
+}
+
+int
+set_prio(int p)
+{
+  int old;
+
+  acquire(&ptable.lock);
+  old = myproc()->priority;
+  myproc()->priority = p;
+  release(&ptable.lock);
+
+  if(p>old)
+    yield();
+  return 0;
 }

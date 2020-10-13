@@ -90,7 +90,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->switches = 0;
-  p->priority = 50;
+  p->priority = 2147483647;
 
   release(&ptable.lock);
 
@@ -325,7 +325,7 @@ wait(void)
 void
 scheduler(void)
 {
-  struct proc *p;
+  struct proc *p, *hp, *curp;
   struct cpu *c = mycpu();
   c->proc = 0;
   
@@ -338,6 +338,12 @@ scheduler(void)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+
+      hp = p;
+      for (curp=ptable.proc; curp < &ptable.proc[NPROC]; curp++)
+        if((curp->state == RUNNABLE) && (hp->priority < curp->priority))
+          hp = curp;
+      p = hp;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -594,16 +600,16 @@ get_proc_info(int pid, struct processInfo *info)
 }
 
 int
-set_prio(int p)
+set_prio(int prio)
 {
   int old;
-
   acquire(&ptable.lock);
   old = myproc()->priority;
-  myproc()->priority = p;
+  myproc()->priority = prio;
   release(&ptable.lock);
 
-  if(p>old)
+  if (prio > old)
     yield();
+
   return 0;
 }

@@ -602,14 +602,9 @@ get_proc_info(int pid, struct processInfo *info)
 int
 set_prio(int prio)
 {
-  int old;
   acquire(&ptable.lock);
-  old = myproc()->priority;
   myproc()->priority = prio;
   release(&ptable.lock);
-
-  if (prio > old)
-    yield();
 
   return 0;
 }
